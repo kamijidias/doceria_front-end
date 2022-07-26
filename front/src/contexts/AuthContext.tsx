@@ -8,8 +8,9 @@ import Router from 'next/router'
 type AuthContextData = {
     user: UserProps;
     isAuthenticated: boolean;
-    signIn: (credentials: SignProps) => Promise<void>
-    signOut: () => void,
+    signIn: (credentials: SignInProps) => Promise<void>
+    signOut: () => void;
+    signUp: (credentials: SignUpProps) => Promise<void>;
 }
 
 type UserProps = {
@@ -18,9 +19,15 @@ type UserProps = {
     email: string;
 }
 
-type SignProps = {
+type SignInProps = {
     email: string;
     password: string;
+}
+
+type SignUpProps = {
+    name: string,
+    email: string,
+    password: string,
 }
 
 type AuthProviderProps = {
@@ -42,7 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps){
     const [user, setUser] = useState<UserProps>()
     const isAuthenticated = !!user;
 
-    async function signIn({ email, password }: SignProps ){
+    async function signIn({ email, password }: SignInProps ){
         try{
             const response = await api.post('/session', {
                 email,
@@ -75,10 +82,30 @@ export function AuthProvider({ children }: AuthProviderProps){
             console.log("Erro ao acessar", err)
 
         }
+        
+    }
+
+    async function signUp({ name, email, password }: SignUpProps){
+        try{
+            
+            const reponse = await api.post('/users', {
+                name, 
+                email,
+                password
+            })
+
+            console.log("Cadastrado com sucesso!")
+
+            Router.push('/')
+
+        }catch(err){
+            console.log("erro ao cadastrar", err)
+        }
+
     }
 
     return(
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut, signUp }}>
             {children}
         </AuthContext.Provider>
     )
