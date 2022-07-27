@@ -85,7 +85,7 @@ export default function Singup() {
 
                     </form>
 
-                    <Link href="/signup">
+                    <Link href="/">
                         <a className={styles.text}>Já possui uma conta? Faça seu login!</a>
                     </Link>
 
