@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useState, useEffect } from 'react';
 
 import { api } from '../services/apiClient';
 
@@ -40,21 +40,45 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData)
 
 
-export function signOut(){
-  try{
+export function signOut() {
+  try {
     destroyCookie(undefined, '@nextauth.token')
     Router.push('/')
-  }catch{
+  } catch {
     console.log('erro ao deslogar')
   }
 }
 
-export function AuthProvider({ children }: AuthProviderProps){
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>()
   const isAuthenticated = !!user;
 
-  async function signIn({ email, password }: SignInProps){
-    try{
+  useEffect(() => {
+
+    //Tentar pegar algo no cookie
+    const { '@nextauth.token': token } = parseCookies();
+
+    if (token) {
+      api.get('/me').then(response => {
+        const { id, name, email } = response.data;
+
+        setUser({
+          id,
+          name,
+          email
+        })
+
+      })
+        .catch(() => {
+          //Se deu erro deslogamos o user.
+          signOut();
+        })
+    }
+
+  }, [])
+
+  async function signIn({ email, password }: SignInProps) {
+    try {
       const response = await api.post('/session', {
         email,
         password
@@ -83,16 +107,16 @@ export function AuthProvider({ children }: AuthProviderProps){
       Router.push('/dashboard')
 
 
-    }catch(err){
+    } catch (err) {
       toast.error("Erro ao acessar!")
       console.log("ERRO AO ACESSAR ", err)
     }
   }
 
 
-  async function signUp({ name, email, password}: SignUpProps){
-    try{
-      
+  async function signUp({ name, email, password }: SignUpProps) {
+    try {
+
       const response = await api.post('/users', {
         name,
         email,
@@ -103,13 +127,13 @@ export function AuthProvider({ children }: AuthProviderProps){
 
       Router.push('/')
 
-    }catch(err){
+    } catch (err) {
       toast.error("Erro ao cadastrar!")
       console.log("erro ao cadastrar ", err)
     }
   }
 
-  return(
+  return (
     <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut, signUp }}>
       {children}
     </AuthContext.Provider>
