@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../../styles/home.module.scss';
 
-//import logoImg from '../../public/logo.svg';
+import chefImg from '../../public/chef.jpg';
 
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
@@ -49,6 +49,11 @@ export default function Home() {
         <title>Doces</title>
       </Head>
       <div className={styles.containerCenter}>
+        <Image className="img"
+          src={chefImg} 
+          alt="Logo chefe" 
+          width={200} 
+          height={160} />
 
         <div className={styles.login}>
           <form onSubmit={handleLogin}>
@@ -86,7 +91,7 @@ export default function Home() {
 }
 
 export const getServerSideProps = canSSRGuest(async (ctx) => {
-  
+
   return {
     props: {}
   }

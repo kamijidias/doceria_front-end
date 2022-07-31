@@ -6,7 +6,13 @@
   align-items: center;
   flex-direction: column;
   background-color: var(--grey-900);
+
+  img{
+    border-radius: 80px;
+  }
+
 }
+
 
 .login{
   margin-top: 2rem;
